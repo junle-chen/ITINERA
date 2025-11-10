@@ -2,12 +2,14 @@ import requests
 import json
 import logging
 import os
+from dotenv import load_dotenv
+load_dotenv()
 
 from openai import OpenAI
 
 class OpenaiCall:
     def __init__(self):
-        self.client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+        self.client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"), base_url=os.getenv("OPENAI_BASE_URL"))
 
     def chat(self, messages, model="gpt-3.5-turbo-1106", temperature=0):
         response = self.client.chat.completions.create(

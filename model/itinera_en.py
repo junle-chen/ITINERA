@@ -178,25 +178,23 @@ class ItiNera:
         start_poi, end_poi = None, None
 
         for req in structured_input:
-            # Default the type to "location" if not specified
-            if req["type"] is None:
-                req["type"] = "location"
-            
+            req_type = (req.get("type") or "place").lower()
+
             # Handle "itinerary" type requirements
-            if req["type"] == "itinerary":
+            if req_type == "itinerary":
                 itinerary_pos_reqs.append(req["pos"])
                 if req["neg"] is not None:
                     itinerary_neg_reqs.append(req["neg"])
             
             # Handle location-related types: "location", "starting point", "ending point"
-            elif req["type"] in ["location", "starting point", "ending point"]:
+            elif req_type in ["location", "place", "starting point", "ending point"]:
                 if req["mustsee"] == True:
                     must_see_poi_names.append(req["pos"])
                 user_pos_reqs.append(req["pos"])
                 user_neg_reqs.append(req["neg"])
-                if req["type"] == "starting point":
+                if req_type == "starting point":
                     start_poi = req["pos"]
-                if req["type"] == "ending point":
+                if req_type == "ending point":
                     end_poi = req["pos"]
             else:
                 # Raise an error if an unexpected type is encountered

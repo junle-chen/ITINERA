@@ -2,9 +2,13 @@ folium==0.18.0
 geopandas==1.0.1
 networkx==2.8.8
 numpy==2.0.2
-openai==1.54.3
+openai==1.55.3
+openai-whisper==20231117
+paddleocr==2.7.0.3
+paddlepaddle==2.6.1
 packaging==24.1
 pandas==2.2.3
+pillow==10.4.0
 PuLP==2.9.0
 python_tsp==0.5.0
 PyYAML==6.0.2

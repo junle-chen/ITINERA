@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 def get_system_prompt(maxPoiNum, numMustSee, numCandidates):
     
     if numMustSee > maxPoiNum-2:
@@ -262,6 +265,75 @@ def process_input_prompt(user_input):
 
     Now, based on the **user input**, refer to the **examples** and return the results according to the **output specifications** and **output format**.
     """
+
+    return prompt
+
+
+def get_poi_extraction_prompt(post_info: str) -> str:
+
+    prompt = f"""
+# Guidelines
+
+## Task Background
+Your task is to identify and extract mentioned locations in the posts/travelogues provided by users to help them quickly find these places on a map. Now, based on the content of the post and its context, carry out the extraction and description of Points of Interest (POIs) mentioned in the post. Focus primarily on places that can be visited, rather than merely on place names.
+
+## Notes on Handling POIs
+1. **Comprehensive Definition of POI**: Typically used to describe a specific geographical location or site, such as restaurants, hotels, streets, attractions, museums, bars, cafes, malls, etc. These locations or sites may have specific value or interest to users or travelers.
+2. **Characteristics of POI**: Specific places recommended or mentioned in the post that are usable for dining, entertainment, etc.
+3. **Specificity**: A POI refers to a specific, particular place, not a broad geographical area or city name.
+4. **Uniqueness**: When a text is separated by symbols like "/", "&", ",", for example, "Julu Road/Tianzifang", it often represents two POIs; in this case, "Julu Road" and "Tianzifang" should be extracted separately.
+5. **Examples of POI**: Specific restaurants, performance venues, attractions, shops, streets, etc.
+6. **Non-POI Examples**: Collections of places, food names, types of cuisine, performance groups, exhibition events, etc.
+
+## Post Structure
+- **Title**: The post's title.
+- **Text**: The main body content of the post.
+- **Text in the images**: text recognized from the images.
+- **Transcribed text**: text transcribed from the video.
+
+## Task Process
+1. **Extraction**: Based on your reasoning, judgment, and knowledge, extract all mentioned POIs from the post.
+2. **Verification**: Ensure every extracted POI fits the definition and is a specific place.
+3. **Address Information**: For each POI, provide the related address information that can be searched on a map, such as "158 Julu Road, Shanghai." If no address information is available, use null.
+4. **Handling No Information**: If no POIs are present, return an empty dictionary {{}}.
+5. **Formatting**: Organize information into the specified JSON structure.
+
+## Output Format
+Return a JSON dictionary in the following format:
+{{
+  "POI Name": "Related Address Information for the POI or null"
+}}
+
+## Task Start
+Please begin processing the post content:
+```text
+{post_info}
+```
+
+Ensure the final output is valid JSON that can be parsed by `json.loads`.
+"""
+
+    return prompt
+
+
+def get_poi_description_prompt(post_info: str, poi_names: list[str]) -> str:
+
+    poi_block = "\n".join(f"- {name}" for name in poi_names)
+    prompt = f"""
+{post_info}
+
+Based on the content of the above post, please write out the reasons for recommending each location in the following list. Consider what can be done at this location, its features, and why it is fun. If the original post lacks information, you may appropriately supplement based on your knowledge, but please ensure brevity. Each description must not exceed 30 words.
+
+Locations:
+{poi_block}
+
+Return the result in JSON format as:
+{{
+  "Place Name": "Information related to the place from the original post"
+}}
+
+If a place does not have any relevant information, set the value to "null" (as a string). Ensure the output can be parsed by `json.loads`.
+"""
 
     return prompt
 
