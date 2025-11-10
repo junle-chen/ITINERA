@@ -6,10 +6,16 @@
     "configurations": [
         
         {
-            "name": "Python Debugger: Module",
+            "name": "Python Debugger: POI_Construct Module",
             "type": "debugpy",
             "request": "launch",
             "module": "model.utils.POI_construct"
+        },
+        {
+            "name": "Python Debugger: Scraper Module",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "Scraper.xhs_scraper"
         }
     ]
 }
