@@ -23,7 +23,7 @@ import os
 import tempfile
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Dict, Iterable, List, Optional, Sequence
+from typing import Any, Dict, Iterable, List, Optional, Sequence
 
 import numpy as np
 import pandas as pd
@@ -92,9 +92,30 @@ class POIRecord:
     amap_id: Optional[str]
     city: Optional[str]
     address: Optional[str]
-    description: Optional[str]
     source_url: str
     source_context: str
+    category: Optional[str] = None
+    rating: Optional[str] = None
+    description: Optional[str] = None
+
+    def formatted_context(self) -> str:
+        """Builds the context text stored in the CSV and embedding."""
+        coord_text = (
+            f"{self.latitude:.6f}, {self.longitude:.6f}"
+            if self.latitude is not None and self.longitude is not None
+            else "unknown"
+        )
+        parts = [
+            self.description or self.source_context,
+            "Integration of POI data via the Amap API.",
+            f"Address: {self.address or self.location_text or 'unknown'}",
+            f"Coordinates: {coord_text}",
+        ]
+        if self.category:
+            parts.append(f"Category: {self.category}")
+        if self.rating:
+            parts.append(f"User rating: {self.rating}")
+        return " ".join(part for part in parts if part)
 
     def to_row(self, poi_id: int) -> Dict[str, object]:
         if self.longitude is None or self.latitude is None:
@@ -103,17 +124,15 @@ class POIRecord:
             )
 
         x, y = _lonlat_to_webmercator(self.longitude, self.latitude)
-        final_desc = self.description or self.source_context
+        final_context = self.formatted_context()
         return {
             "id": poi_id,
             "name": self.name,
-            "address": self.address or self.location_text or "",
-            "desc": final_desc,
             "x": x,
             "y": y,
             "lon": self.longitude,
             "lat": self.latitude,
-            "context": final_desc,
+            "context": final_context,
         }
 
 
@@ -140,10 +159,9 @@ class MediaContentAggregator:
             return texts
 
         for idx, url in enumerate(image_urls):
-            # limit 1 url for demo
-            if idx >= 1:
-                break    
             try:
+                if idx > 2:
+                    break
                 resp = self.session.get(url, timeout=30)
                 resp.raise_for_status()
                 img = Image.open(BytesIO(resp.content))
@@ -211,7 +229,7 @@ class AmapClient:
         self.api_key = api_key
         self.session = requests.Session()
 
-    def lookup(self, name: str, city: Optional[str] = None) -> Optional[Dict[str, str]]:
+    def lookup(self, name: str, city: Optional[str] = None) -> Optional[Dict[str, Any]]:
         params = {
             "key": self.api_key,
             "keywords": name,
@@ -241,19 +259,22 @@ class AmapClient:
         except ValueError:
             lon, lat = None, None  # type: ignore[assignment]
 
+        biz_ext = entry.get("biz_ext") or {}
         return {
             "name": entry.get("name") or name,
             "address": entry.get("address"),
             "amap_id": entry.get("id"),
             "longitude": lon,
             "latitude": lat,
+            "category": entry.get("type"),
+            "rating": biz_ext.get("rating"),
         }
 
 
 class POIDatabase:
     """Manages persistence for the POI table :math:`P` and embedding matrix :math:`E`."""
 
-    COLUMNS = ["id", "name", "address", "desc", "x", "y", "lon", "lat", "context"]
+    COLUMNS = ["id", "name", "x", "y", "lon", "lat", "context"]
 
     def __init__(self, poi_csv_path: str | Path, embedding_path: str | Path):
         self.poi_csv_path = Path(poi_csv_path)
@@ -269,7 +290,7 @@ class POIDatabase:
 
         for col in self.COLUMNS:
             if col not in df.columns:
-                if col in {"name", "address", "desc", "context"}:
+                if col in {"name", "context"}:
                     df[col] = ""
                 else:
                     df[col] = np.nan
@@ -291,8 +312,7 @@ class POIDatabase:
             row["id"] = start_id + idx
 
         updated = pd.concat([df, pd.DataFrame(poi_rows)], ignore_index=True)
-        ordered_cols = list(dict.fromkeys(self.COLUMNS + list(updated.columns)))
-        updated = updated[ordered_cols]
+        updated = updated[self.COLUMNS]
         updated.to_csv(self.poi_csv_path, index=False)
 
         existing_embeddings = self.load_embeddings()
@@ -353,8 +373,8 @@ class POIConstructionPipeline:
         city_name: str,
         amap_api_key: Optional[str] = None,
         proxy_call: Optional[OpenaiCall] = None,
-        extraction_model: str = "gpt-3.5-turbo-0125",
-        description_model: str = "gpt-3.5-turbo-0125",
+        extraction_model: str = "gpt-3.5-turbo",
+        description_model: str = "gpt-3.5-turbo",
         asr_model: str = "base",
     ) -> "POIConstructionPipeline":
         data_dir = Path("model") / "data"
@@ -386,16 +406,44 @@ class POIConstructionPipeline:
     def process_single_post(self, url: str) -> List[POIRecord]:
         """Main entry point for a single post."""
 
+        print("\n" + "=" * 80)
+        print("🚀 Starting POI Construction Pipeline")
+        print("=" * 80)
+        print(f"📍 Processing URL: {url}")
+
+        print("\n[Step 1/6] 🕷️  Scraping post content...")
         scraped = self._scrape(url)
+        print(
+            f"✓ Title: {scraped.title[:50]}..."
+            if len(scraped.title) > 50
+            else f"✓ Title: {scraped.title}"
+        )
+        print(f"✓ Found {len(scraped.images)} images, {len(scraped.videos)} videos")
+
+        print("\n[Step 2/6] 🖼️  Extracting text from images (OCR)...")
         ocr_texts = self.media.extract_image_text(scraped.images)
+        print(f"✓ Extracted text from {len(ocr_texts)} images")
+
         # transcripts = self.media.transcribe_videos(scraped.videos)
         transcripts = []
+
+        print("\n[Step 3/6] 📝 Merging content from all sources...")
         unified_context = self._merge_modal_content(scraped, ocr_texts, transcripts)
+        print(f"✓ Unified context length: {len(unified_context)} characters")
 
+        print("\n[Step 4/6] 🔍 Extracting POI candidates using LLM...")
         poi_candidates = self._extract_pois(unified_context)
-        resolved_pois = self._resolve_locations(poi_candidates, scraped)
-        enriched_pois = self._generate_descriptions(resolved_pois, unified_context)
+        print(f"✓ Found {len(poi_candidates)} POI candidates")
 
+        print("\n[Step 5/6] 🗺️  Resolving locations via Amap API...")
+        resolved_pois = self._resolve_locations(poi_candidates, scraped)
+        print(f"✓ Successfully resolved {len(resolved_pois)} POIs with coordinates")
+
+        print("\n[Step 6/6] ✍️  Generating descriptions using LLM...")
+        enriched_pois = self._generate_descriptions(resolved_pois, unified_context)
+        print(f"✓ Generated descriptions for {len(enriched_pois)} POIs")
+
+        print("\n[Final] 💾 Validating and preparing records...")
         valid_records: List[POIRecord] = []
         rows: List[Dict[str, object]] = []
         for record in enriched_pois:
@@ -406,13 +454,33 @@ class POIConstructionPipeline:
                 LOGGER.warning("Skipping POI %s: %s", record.name, exc)
 
         if valid_records:
-            embedding_texts = [
-                f"{record.name}，地址是{record.address or record.location_text or '未知地址'}，{record.description or unified_context}"
-                for record in valid_records
-            ]
+            print(f"✓ Validated {len(valid_records)} POI records")
+
+            print("\n[Embeddings] 🧮 Creating embeddings...")
+            embedding_texts = []
+            for record in valid_records:
+                coord_text = (
+                    f"{record.latitude:.6f}, {record.longitude:.6f}"
+                    if record.latitude is not None and record.longitude is not None
+                    else "unknown"
+                )
+                embedding_texts.append(
+                    f"{record.name}: Integration of POI data via the Amap API. Address: {record.address or record.location_text or 'unknown'}, Coordinates: ({coord_text}), Category: {record.category or 'unspecified'}, Rating: {record.rating or 'N/A'}. Details: {record.description or unified_context}"
+                )
             embeddings = self._create_embeddings(embedding_texts)
+            print(f"✓ Created {len(embeddings)} embeddings")
+
+            print("\n[Database] 💽 Saving to database...")
             self.database.append(rows, embeddings)
+            print(f"✓ Successfully saved {len(valid_records)} POIs to database")
+
+            print("\n" + "=" * 80)
+            print("✅ POI Construction Pipeline completed successfully!")
+            print("=" * 80 + "\n")
         else:
+            print("\n" + "=" * 80)
+            print(f"⚠️  No valid POIs identified for {url}")
+            print("=" * 80 + "\n")
             LOGGER.info("No POIs identified for %s", url)
         return valid_records
 
@@ -452,10 +520,27 @@ class POIConstructionPipeline:
         """
         prompt = get_poi_extraction_prompt(post_info=context)
         response = self.proxy.chat(
-            messages=[{"role": "user", "content": prompt}],
-            model=self.extraction_model
+            messages=[{"role": "user", "content": prompt}], model=self.extraction_model
         )
+
+        # Clean up the response: remove markdown code blocks and special characters
+        response = response.strip()
+        if response.startswith("```"):
+            # Remove markdown code block markers
+            lines = response.split("\n")
+            if lines[0].startswith("```"):
+                lines = lines[1:]
+            if lines and lines[-1].startswith("```"):
+                lines = lines[:-1]
+            response = "\n".join(lines)
+
+        # Replace non-breaking spaces
+        response = response.replace("\xa0", " ")
         
+        
+        # Log the cleaned response for debugging
+        print(f"\n[DEBUG] Cleaned LLM response:\n{response}\n")
+
         try:
             parsed = json.loads(response)
         except json.JSONDecodeError:
@@ -494,6 +579,11 @@ class POIConstructionPipeline:
             latitude = amap_result.get("latitude") if amap_result else None
             amap_id = amap_result.get("amap_id") if amap_result else None
             address = amap_result.get("address") if amap_result else item.get("address")
+            category = amap_result.get("category") if amap_result else None
+            rating = amap_result.get("rating") if amap_result else None
+            # if lon or lat is None, skip this POI
+            if longitude is None or latitude is None:
+                continue
             resolved.append(
                 POIRecord(
                     name=name,
@@ -503,6 +593,8 @@ class POIConstructionPipeline:
                     amap_id=amap_id,
                     city=city,
                     address=address,
+                    category=category,
+                    rating=rating,
                     description=None,
                     source_url=scraped.url,
                     source_context=scraped.merged_text,
@@ -516,11 +608,33 @@ class POIConstructionPipeline:
         if not poi_records:
             return []
 
-        poi_names = [record.name for record in poi_records]
-        prompt = get_poi_description_prompt(post_info=context, poi_names=poi_names)
+        # Prepare POI data with name, address, and category
+        poi_data = []
+        for record in poi_records:
+            poi_data.append(
+                {
+                    "name": record.name,
+                    "address": record.address or "",
+                    "category": record.category or "",
+                }
+            )
+
+        prompt = get_poi_description_prompt(post_info=context, poi_data=poi_data)
         response = self.proxy.chat(
             messages=[{"role": "user", "content": prompt}], model=self.description_model
         )
+
+        # Clean up the response: remove markdown code blocks and special characters
+        response = response.strip()
+        if response.startswith("```"):
+            lines = response.split("\n")
+            if lines[0].startswith("```"):
+                lines = lines[1:]
+            if lines and lines[-1].startswith("```"):
+                lines = lines[:-1]
+            response = "\n".join(lines)
+        response = response.replace("\xa0", " ")
+
         try:
             desc_map = json.loads(response)
         except json.JSONDecodeError:
@@ -532,7 +646,7 @@ class POIConstructionPipeline:
             if isinstance(desc, str) and desc.lower() != "null" and desc.strip():
                 record.description = desc.strip()
             else:
-                record.description = context
+                record.description = ""
         return poi_records
 
     def _create_embeddings(self, texts: List[str]) -> np.ndarray:

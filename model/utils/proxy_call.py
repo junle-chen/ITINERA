@@ -11,7 +11,7 @@ class OpenaiCall:
     def __init__(self):
         self.client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"), base_url=os.getenv("OPENAI_BASE_URL"))
 
-    def chat(self, messages, model="gpt-3.5-turbo-1106", temperature=0):
+    def chat(self, messages, model="gpt-3.5-turbo", temperature=0):
         response = self.client.chat.completions.create(
             model=model,
             # response_format={"type": "json_object"},
@@ -20,7 +20,7 @@ class OpenaiCall:
         )
         return response.choices[0].message.content
 
-    def stream_chat(self, messages, model="gpt-3.5-turbo-1106", temperature=0):
+    def stream_chat(self, messages, model="gpt-3.5-turbo", temperature=0):
         for chunk in self.client.chat.completions.create(
             model=model,
             # response_format={"type": "json_object"},

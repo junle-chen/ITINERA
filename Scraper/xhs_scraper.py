@@ -132,7 +132,7 @@ class XHSScraper:
 
         
         scripts = soup.find(partial(text_contains, substr="imageList", tag_name="script")).text
-        print(scripts)
+
         imgs = re.findall(r'"imageList":\[(.*)\]', scripts)
         imgs = imgs[0] if imgs else ''
         len_imgs = len(imgs)

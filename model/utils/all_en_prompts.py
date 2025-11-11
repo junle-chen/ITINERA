@@ -2,9 +2,9 @@ from __future__ import annotations
 
 
 def get_system_prompt(maxPoiNum, numMustSee, numCandidates):
-    
-    if numMustSee > maxPoiNum-2:
-        maxPoiNum = numMustSee+2
+
+    if numMustSee > maxPoiNum - 2:
+        maxPoiNum = numMustSee + 2
 
     system_prompt = f"""
     Hello ChatGPT, please act as a travel master, skilled in curating exquisite travel experiences. Your mission is to create the perfect one-day itinerary from the provided list of 'potential points of interest (POI)'. Your specialty? Weaving vivid stories and evoking such a strong sense of wanderlust that just hearing your narrative feels like being there in person.
@@ -14,7 +14,6 @@ def get_system_prompt(maxPoiNum, numMustSee, numCandidates):
     """
 
     return system_prompt
-
 
 
 def check_final_reverse_prompt(context, user_reqs):
@@ -46,7 +45,7 @@ def check_final_reverse_prompt(context, user_reqs):
 
     Now, based on the **context**, please provide your assessment following the **output specifications**.
     """
-    
+
     return prompt
 
 
@@ -82,11 +81,13 @@ def get_hour_prompt(user_reqs):
 
     Now, based on the **user requirements**, please return the required time for a one-day itinerary following the **output specifications**.
     """
-    
+
     return prompt
 
 
-def get_start_point_prompt(candidate_points, user_reqs, return_candidates, distance_string):
+def get_start_point_prompt(
+    candidate_points, user_reqs, return_candidates, distance_string
+):
 
     candidate_strings = f""
     for i, candidate in enumerate(candidate_points):
@@ -272,57 +273,149 @@ def process_input_prompt(user_input):
 def get_poi_extraction_prompt(post_info: str) -> str:
 
     prompt = f"""
-# Guidelines
+# Guidelines  
+## Task Background  
+Your task is to identify and extract mentioned cations in the posts/travelogues provided by users to help them quickly find these places on a map. Now, based on the content of the post and in context, carry out the extraction and description of Points of Interest (POIs) mentioned in the post. Focus primarily on places that can be visited, rather than merely on place names.
 
-## Task Background
-Your task is to identify and extract mentioned locations in the posts/travelogues provided by users to help them quickly find these places on a map. Now, based on the content of the post and its context, carry out the extraction and description of Points of Interest (POIs) mentioned in the post. Focus primarily on places that can be visited, rather than merely on place names.
+## Notes on Handling POIs  
+1. Comprehensive Definition of POI: Typically used to describe a specific geographical location or site, such as restaurants, hotels, streets, attractions, museums, bars, cafes, malls, etc. These locations or sites may have specific value or interest to users or travelers.  
+2. Characteristics of POI: Specific places recommended or mentioned in the post that are usable for dining, entertainment, etc.  
+3. Specificity: A POI refers to a specific, particular place, not a broad geographical area or city name.  
+4. Uniqueness: When a text is separated by symbols like "/", "&", ",", for example, "Julu Road/Tianzifang", it often represents two POIs, in this case, "Julu Road" and "Tianzifang" should be extracted separately.  
+5. Examples of POI: Specific restaurants, performance venues, attractions, shops, streets, etc.  
+6. Non-POI Examples: Collections of places, food names, types of cuisine, performance groups, exhibition events, etc.
+7. Each POI must be unique - no duplicates.
 
-## Notes on Handling POIs
-1. **Comprehensive Definition of POI**: Typically used to describe a specific geographical location or site, such as restaurants, hotels, streets, attractions, museums, bars, cafes, malls, etc. These locations or sites may have specific value or interest to users or travelers.
-2. **Characteristics of POI**: Specific places recommended or mentioned in the post that are usable for dining, entertainment, etc.
-3. **Specificity**: A POI refers to a specific, particular place, not a broad geographical area or city name.
-4. **Uniqueness**: When a text is separated by symbols like "/", "&", ",", for example, "Julu Road/Tianzifang", it often represents two POIs; in this case, "Julu Road" and "Tianzifang" should be extracted separately.
-5. **Examples of POI**: Specific restaurants, performance venues, attractions, shops, streets, etc.
-6. **Non-POI Examples**: Collections of places, food names, types of cuisine, performance groups, exhibition events, etc.
+## Post Structure  
+Title: The post's title.  
+Text: The main body content of the post.  
+Text in the images: text recognized from the images.  
+Transcribed text: text transcribed from the video.  
 
-## Post Structure
-- **Title**: The post's title.
-- **Text**: The main body content of the post.
-- **Text in the images**: text recognized from the images.
-- **Transcribed text**: text transcribed from the video.
+## Task Process  
+1. Extraction: Based on your reasoning, judgment, and knowledge, extract all mentioned POIs from the post.  
+2. Verification: In the context of each POI, ensure all POIs fit the definition and are specific places.  
+3. Address Information: In the context of each POI, find related address information that can be searched on a map, such as "158 Julu Road, Shanghai."  
+4. Handling No Information: If no location information is available, return an empty POI list: {{}}.  
+5. Formatting: Organize information into the specified JSON structure.
 
-## Task Process
-1. **Extraction**: Based on your reasoning, judgment, and knowledge, extract all mentioned POIs from the post.
-2. **Verification**: Ensure every extracted POI fits the definition and is a specific place.
-3. **Address Information**: For each POI, provide the related address information that can be searched on a map, such as "158 Julu Road, Shanghai." If no address information is available, use null.
-4. **Handling No Information**: If no POIs are present, return an empty dictionary {{}}.
-5. **Formatting**: Organize information into the specified JSON structure.
 
-## Output Format
-Return a JSON dictionary in the following format:
-{{
-  "POI Name": "Related Address Information for the POI or null"
-}}
+## Output Format  
+### Specific Format (valid JSON only) 
+{{ "POI Name": "Related Address Information for the POI" }}
 
-## Task Start
-Please begin processing the post content:
-```text
-{post_info}
-```
+### Examples  
+Example 1: If the original post mentions "Lao Nong Tang Noodle Shop in Luxi: A time-honored noodle shop that appears on Shanghai's must-eat list all year round!", the output for this POI should be {{ "Lao Nong Tang Noodle Shop in Luxi": null }}  
 
-Ensure the final output is valid JSON that can be parsed by `json.loads`.
+Example 2: If the original post mentions "Red Baron (Jianye District Wentiyi Road branch) Looking around, the most striking red on the entire Wentiyi Road, seamlessly blending with Mixue Bingcheng", the output for this POI should be {{ "Red Baron (Jianye District Wentiyi Road branch)": null }}
+
+## Output Standards  
+- The output is a dictionary, with keys being the POI names and values being the related address information for the POI. If address information is missing, please use "null" to fill in.  
+- Ensure the output is in valid JSON format and can be parsed by Python json.loads.  
+
+## Task Start  
+Please begin processing the post content: ```{post_info}```.  
+Note: Ensure the return format follows {{{{Point of Interest Name: Related Address Information}}}}. Ensure it can be json.loads parsed.
 """
 
     return prompt
 
 
-def get_poi_description_prompt(post_info: str, poi_names: list[str]) -> str:
+def get_poi_extraction_prompt_new(post_info: str) -> str:
+    """ """
 
-    poi_block = "\n".join(f"- {name}" for name in poi_names)
+    prompt = f"""
+# Guidelines  
+## Task Background  
+Your task is to identify and extract mentioned cations in the posts/travelogues provided by users to help them quickly find these places on a map. Now, based on the content of the post and in context, carry out the extraction and description of Points of Interest (POIs) mentioned in the post. Focus primarily on places that can be visited, rather than merely on place names.
+
+## Notes on Handling POIs  
+1. Comprehensive Definition of POI: Typically used to describe a specific geographical location or site, such as restaurants, hotels, streets, attractions, museums, bars, cafes, malls, etc. These locations or sites may have specific value or interest to users or travelers.  
+2. Characteristics of POI: Specific places recommended or mentioned in the post that are usable for dining, entertainment, etc.  
+3. Specificity: A POI refers to a specific, particular place, not a broad geographical area or city name.  
+4. Uniqueness: When a text is separated by symbols like "/", "&", ",", for example, "Julu Road/Tianzifang", it often represents two POIs, in this case, "Julu Road" and "Tianzifang" should be extracted separately.  
+5. Examples of POI: Specific restaurants, performance venues, attractions, shops, streets, etc.  
+6. Non-POI Examples: Collections of places, food names, types of cuisine, performance groups, exhibition events, etc.
+
+## Post Structure  
+Title: The post's title.  
+Text: The main body content of the post.  
+Text in the images: text recognized from the images.  
+Transcribed text: text transcribed from the video.  
+
+## Task Process  
+1. Extraction: Based on your reasoning, judgment, and knowledge, extract all mentioned POIs from the post.  
+2. Verification: In the context of each POI, ensure all POIs fit the definition and are specific places.  
+3. Address Information: For each extracted POI, use your broad real-world knowledge to provide the most commonly recognized, precise, mappable address of the POI (such as street name and number, district, or landmark area). If you are uncertain or the POI has multiple ambiguous locations, return null. Do not add invented or fabricated information.
+4. Handling No Information: If no location information is available, return an empty POI list: {{}}.  
+5. Formatting: Organize information into the specified JSON structure.
+
+## Output Format  
+### Specific Format  
+{{ "POI Name": "Related Address Information for the POI" }}
+
+**Example 1**
+Input:
+"我去上海和平饭店喝下午茶"
+
+Output:
+{{{{ "和平饭店": "上海市黄浦区南京东路20号" }}}}
+
+**Example 2**
+Input:
+"今天在南京吃了南京大排档"
+
+Output:
+{{{{ "南京大排档": "南京市秦淮区夫子庙贡院街53号" }}}}
+
+**Example 3 (Address unknown)**
+Input:
+"去小李烧烤了"
+
+Output:
+{{{{ "小李烧烤": null }}}}
+
+
+## Output Standards  
+- The output is a dictionary, with keys being the POI names and values being the related address information for the POI. If address information is missing, please use "null" to fill in.  
+- Ensure the output is in valid JSON format and can be parsed by Python json.loads.  
+- If the POI is a well-known place (e.g., famous hotel, museum, landmark, shopping street, etc.), provide its standard commonly-known address even if the post does not include address details.
+
+
+## Task Start  
+Please begin processing the post content: ```{post_info}```.  
+Note: Ensure the return format follows {{{{Point of Interest Name: Related Address Information}}}}. Ensure it can be json.loads parsed.
+"""
+
+    return prompt
+
+
+def get_poi_description_prompt(post_info: str, poi_data: list[dict[str, str]]) -> str:
+    """
+    Generate a prompt for creating POI descriptions.
+
+    Args:
+        post_info: The original post content
+        poi_data: List of dicts with keys 'name', 'address', 'category'
+                  Example: [{"name": "外滩", "address": "上海市黄浦区中山东一路", "category": "风景名胜"}]
+    """
+    poi_block = ""
+    for poi in poi_data:
+        name = poi.get("name", "")
+        address = poi.get("address", "")
+        category = poi.get("category", "")
+
+        poi_info = f"- {name}"
+        if address:
+            poi_info += f" (地址: {address})"
+        if category:
+            poi_info += f" [类别: {category}]"
+        poi_block += poi_info + "\n"
+
     prompt = f"""
 {post_info}
 
-Based on the content of the above post, please write out the reasons for recommending each location in the following list. Consider what can be done at this location, its features, and why it is fun. If the original post lacks information, you may appropriately supplement based on your knowledge, but please ensure brevity. Each description must not exceed 30 words.
+Based on the content of the above post, please write out the reasons for recommending each location in the following list. Consider what can be done at this location, its features, and why it is fun. Use the provided address and category information to make your description more accurate and specific. If the original post lacks information, you may appropriately supplement based on your knowledge and the provided metadata, but please ensure brevity. Each description must not exceed 30 words.
 
 Locations:
 {poi_block}
@@ -332,22 +425,80 @@ Return the result in JSON format as:
   "Place Name": "Information related to the place from the original post"
 }}
 
-If a place does not have any relevant information, set the value to "null" (as a string). Ensure the output can be parsed by `json.loads`.
+Guidelines:
+- Prioritize information from the original post content
+- Use the address to provide geographic context when relevant
+- Use the category to frame the description appropriately (e.g., restaurants focus on cuisine, museums on exhibits)
+- If the original post lacks information, use your general knowledge combined with the address and category to provide a brief, accurate recommendation
+- Only return "null" (as a string) if the place name does not correspond to a real or recognizable place
+- Ensure the output can be parsed by `json.loads`
+
+Examples:
+
+Example 1:
+Input Post: "南京步行街购物 外滩夜景真美"
+Locations:
+- 南京步行街 (地址: 上海市黄浦区南京东路) [类别: 购物中心]
+- 外滩 (地址: 上海市黄浦区中山东一路) [类别: 风景名胜]
+
+Output:
+{{
+  "南京步行街": "南京步行街是上海最繁华的商业街之一，汇集了众多品牌店铺和美食，是购物和休闲的理想去处。",
+  "外滩": "外滩是上海的标志性景点，拥有壮观的城市天际线和历史建筑，夜景尤为迷人，适合漫步观赏。"
+}}
+
+Example 2:
+Input Post: "老门东古街很有味道 夫子庙小吃一条街"
+Locations:
+- 老门东 (地址: 南京市秦淮区) [类别: 历史街区]
+- 夫子庙 (地址: 南京市秦淮区贡院街) [类别: 文化景点]
+
+Output:
+{{
+  "老门东": "老门东是南京的历史文化街区，保留了传统建筑风格，充满古韵，适合漫步和体验当地文化。",
+  "夫子庙": "夫子庙是南京著名的文化旅游景点，以孔庙为中心，周围有丰富的秦淮小吃和特色商品。"
+}}
+
+Example 3 (Post lacks detail, use metadata):
+Input Post: "今天去了几个地方"
+Locations:
+- 上海博物馆 (地址: 上海市黄浦区人民大道201号) [类别: 博物馆]
+
+Output:
+{{
+  "上海博物馆": "上海博物馆位于人民广场，收藏丰富的中国古代艺术品，是了解中华文明的重要场所。"
+}}
+
 """
 
     return prompt
 
 
-def get_dayplan_prompt(context_string, must_see_string, keyword_reqs, userReqList, maxPoiNum, numMustSee, numCandidates, itinerary_reqs, start_end, comments="", hours=None, mark_citywalk=False):
-    
+def get_dayplan_prompt(
+    context_string,
+    must_see_string,
+    keyword_reqs,
+    userReqList,
+    maxPoiNum,
+    numMustSee,
+    numCandidates,
+    itinerary_reqs,
+    start_end,
+    comments="",
+    hours=None,
+    mark_citywalk=False,
+):
+
     if "fun" in keyword_reqs:
         keyword_reqs.remove("fun")
 
-    if numMustSee > maxPoiNum-2:
-        maxPoiNum = numMustSee+2
+    if numMustSee > maxPoiNum - 2:
+        maxPoiNum = numMustSee + 2
 
     if len(comments) > 0:
-        comments = f"- Include comments in 'Overall Reason' in your response: {comments}"
+        comments = (
+            f"- Include comments in 'Overall Reason' in your response: {comments}"
+        )
 
     if hours is None:
         hours = 8
@@ -360,18 +511,20 @@ def get_dayplan_prompt(context_string, must_see_string, keyword_reqs, userReqLis
     itinerary_pos_reqs, itinerary_neg_reqs = itinerary_reqs
     itinerary_reqs = f""
     if len(itinerary_pos_reqs) > 0:
-        itinerary_reqs += f"- **Requirements for the itinerary**: {itinerary_pos_reqs}, "
-    
+        itinerary_reqs += (
+            f"- **Requirements for the itinerary**: {itinerary_pos_reqs}, "
+        )
+
     if len(itinerary_neg_reqs) > 0:
         itinerary_reqs += f"itinerary **should not include {itinerary_neg_reqs}**"
-        
+
     start_poi, end_poi = start_end
     if start_poi is not None:
-        start_poi = f'- **Starting Point**: {start_poi}'
+        start_poi = f"- **Starting Point**: {start_poi}"
     else:
         start_poi = f""
     if end_poi is not None:
-        end_poi = f'- **Ending Point**: {end_poi}'
+        end_poi = f"- **Ending Point**: {end_poi}"
     else:
         end_poi = f""
 
@@ -472,5 +625,5 @@ def get_dayplan_prompt(context_string, must_see_string, keyword_reqs, userReqLis
     - Points must be **selected**, with 6 to 10 points in total. **Point names must come from the **Candidate Points** list**.
     - **Ensure all selected points come from the **Candidate Points Order** and are arranged in ascending order**, and **do not select all candidate points**.
     """
-    
+
     return prompt

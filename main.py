@@ -10,7 +10,7 @@ def arg_parse(parser):
 
 def run(args) -> None:
     if args.type == "zh":
-        query = "我想要一个充满历史与艺术气息的行程，逛逛街，看看桥。"
+        query = "我想要一个充满历史与艺术气息的行程，逛逛街，看看桥。同时我也需要去书店"
         from model.itinera import ItiNera
     else:
         query = "I would like an itinerary filled with a sense of history and art, with some street wandering and bridge viewing."

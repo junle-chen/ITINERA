@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    
+        <script>
+            L_NO_TOUCH = false;
+            L_DISABLE_3D = false;
+        </script>
+    
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_b90d7f5e2da0619176b3c1c7c6aa0bb0 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+        
+</head>
+<body>
+    
+    
+            <div class="folium-map" id="map_b90d7f5e2da0619176b3c1c7c6aa0bb0" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_b90d7f5e2da0619176b3c1c7c6aa0bb0 = L.map(
+                "map_b90d7f5e2da0619176b3c1c7c6aa0bb0",
+                {
+                    center: [31.240997506486362, 121.47615087942978],
+                    crs: L.CRS.EPSG3857,
+                    zoom: 13,
+                    zoomControl: true,
+                    preferCanvas: false,
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_376b466f08fcdb555ed9d2ad1f6eede7 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {"attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors", "detectRetina": false, "maxNativeZoom": 19, "maxZoom": 19, "minZoom": 0, "noWrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+            );
+        
+    
+            tile_layer_376b466f08fcdb555ed9d2ad1f6eede7.addTo(map_b90d7f5e2da0619176b3c1c7c6aa0bb0);
+        
+    
+            var marker_a66934cf8de07cb9af849dc100c6f141 = L.marker(
+                [31.24529724127721, 121.48569788029586],
+                {}
+            ).addTo(map_b90d7f5e2da0619176b3c1c7c6aa0bb0);
+        
+    
+            var icon_06226242194c5aa6f62f9cd1c8b0c3fd = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "blue", "prefix": "glyphicon"}
+            );
+            marker_a66934cf8de07cb9af849dc100c6f141.setIcon(icon_06226242194c5aa6f62f9cd1c8b0c3fd);
+        
+    
+        var popup_a9b8b9b14147e60f9a601f24f243aeac = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_502f1b3e6c0755ed5d5b8e9e49bc6ac0 = $(`<div id="html_502f1b3e6c0755ed5d5b8e9e49bc6ac0" style="width: 100.0%; height: 100.0%;">0 - 外白渡桥</div>`)[0];
+                popup_a9b8b9b14147e60f9a601f24f243aeac.setContent(html_502f1b3e6c0755ed5d5b8e9e49bc6ac0);
+            
+        
+
+        marker_a66934cf8de07cb9af849dc100c6f141.bindPopup(popup_a9b8b9b14147e60f9a601f24f243aeac)
+        ;
+
+        
+    
+    
+            var marker_bb013b93bb59d33ada73bbe9bc865daa = L.marker(
+                [31.246473419229524, 121.48332756930998],
+                {}
+            ).addTo(map_b90d7f5e2da0619176b3c1c7c6aa0bb0);
+        
+    
+            var icon_90c8dda986c3666a9e25010b550a3df5 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "blue", "prefix": "glyphicon"}
+            );
+            marker_bb013b93bb59d33ada73bbe9bc865daa.setIcon(icon_90c8dda986c3666a9e25010b550a3df5);
+        
+    
+        var popup_181d603f6da83e9a6012179eaa90d62d = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_3ec0a0e7d89565d9143eb281431ee4b7 = $(`<div id="html_3ec0a0e7d89565d9143eb281431ee4b7" style="width: 100.0%; height: 100.0%;">1 - 乍浦路桥</div>`)[0];
+                popup_181d603f6da83e9a6012179eaa90d62d.setContent(html_3ec0a0e7d89565d9143eb281431ee4b7);
+            
+        
+
+        marker_bb013b93bb59d33ada73bbe9bc865daa.bindPopup(popup_181d603f6da83e9a6012179eaa90d62d)
+        ;
+
+        
+    
+    
+            var marker_97a59e208be457c4879906c3f374a183 = L.marker(
+                [31.246359564738338, 121.48031409041563],
+                {}
+            ).addTo(map_b90d7f5e2da0619176b3c1c7c6aa0bb0);
+        
+    
+            var icon_244166e84e7ad6e405328bcbad6871df = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "blue", "prefix": "glyphicon"}
+            );
+            marker_97a59e208be457c4879906c3f374a183.setIcon(icon_244166e84e7ad6e405328bcbad6871df);
+        
+    
+        var popup_e853f1358f84b32a691e15e0f29f49d7 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_226ba8471d263e733c93c911576d5cb9 = $(`<div id="html_226ba8471d263e733c93c911576d5cb9" style="width: 100.0%; height: 100.0%;">2 - 上海邮政博物馆</div>`)[0];
+                popup_e853f1358f84b32a691e15e0f29f49d7.setContent(html_226ba8471d263e733c93c911576d5cb9);
+            
+        
+
+        marker_97a59e208be457c4879906c3f374a183.bindPopup(popup_e853f1358f84b32a691e15e0f29f49d7)
+        ;
+
+        
+    
+    
+            var marker_ad8cdb16b24daab7840777ec480e2b61 = L.marker(
+                [31.23951138603159, 121.48010601643348],
+                {}
+            ).addTo(map_b90d7f5e2da0619176b3c1c7c6aa0bb0);
+        
+    
+            var icon_3d71ea6d66542d4624973c12714ffd10 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "blue", "prefix": "glyphicon"}
+            );
+            marker_ad8cdb16b24daab7840777ec480e2b61.setIcon(icon_3d71ea6d66542d4624973c12714ffd10);
+        
+    
+        var popup_edad163ef6430459beebaaedded3a8e4 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_8a97b642f8d4c2d42d9082a16a202a36 = $(`<div id="html_8a97b642f8d4c2d42d9082a16a202a36" style="width: 100.0%; height: 100.0%;">3 - 南京路步行街</div>`)[0];
+                popup_edad163ef6430459beebaaedded3a8e4.setContent(html_8a97b642f8d4c2d42d9082a16a202a36);
+            
+        
+
+        marker_ad8cdb16b24daab7840777ec480e2b61.bindPopup(popup_edad163ef6430459beebaaedded3a8e4)
+        ;
+
+        
+    
+    
+            var marker_584d5931ea2c8e659092ba58e30ef6fe = L.marker(
+                [31.241185858189375, 121.48465718720516],
+                {}
+            ).addTo(map_b90d7f5e2da0619176b3c1c7c6aa0bb0);
+        
+    
+            var icon_0e9b364b860d0eed64185cc83982fff3 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "blue", "prefix": "glyphicon"}
+            );
+            marker_584d5931ea2c8e659092ba58e30ef6fe.setIcon(icon_0e9b364b860d0eed64185cc83982fff3);
+        
+    
+        var popup_79909e61a695fde049f683bf4edbcb52 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_1fa8bdae8a295c26cb146cca9aa8a6bc = $(`<div id="html_1fa8bdae8a295c26cb146cca9aa8a6bc" style="width: 100.0%; height: 100.0%;">4 - 上海和平饭店</div>`)[0];
+                popup_79909e61a695fde049f683bf4edbcb52.setContent(html_1fa8bdae8a295c26cb146cca9aa8a6bc);
+            
+        
+
+        marker_584d5931ea2c8e659092ba58e30ef6fe.bindPopup(popup_79909e61a695fde049f683bf4edbcb52)
+        ;
+
+        
+    
+    
+            var marker_06369d4ec7eb048337688f1e7fe522ff = L.marker(
+                [31.227157569452114, 121.44280253291856],
+                {}
+            ).addTo(map_b90d7f5e2da0619176b3c1c7c6aa0bb0);
+        
+    
+            var icon_8aaddfa924522df038a44100c4cf7d32 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "blue", "prefix": "glyphicon"}
+            );
+            marker_06369d4ec7eb048337688f1e7fe522ff.setIcon(icon_8aaddfa924522df038a44100c4cf7d32);
+        
+    
+        var popup_40642b61dbbbd5a1b5159abd93342235 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_30c15d0fab6ab83a1e09cd9590dd7e09 = $(`<div id="html_30c15d0fab6ab83a1e09cd9590dd7e09" style="width: 100.0%; height: 100.0%;">5 - 愚园路</div>`)[0];
+                popup_40642b61dbbbd5a1b5159abd93342235.setContent(html_30c15d0fab6ab83a1e09cd9590dd7e09);
+            
+        
+
+        marker_06369d4ec7eb048337688f1e7fe522ff.bindPopup(popup_40642b61dbbbd5a1b5159abd93342235)
+        ;
+
+        
+    
+    
+            var poly_line_3276b311a12fda9446b445b8153ee35f = L.polyline(
+                [[31.24529724127721, 121.48569788029586], [31.246473419229524, 121.48332756930998], [31.246359564738338, 121.48031409041563], [31.23951138603159, 121.48010601643348], [31.241185858189375, 121.48465718720516], [31.227157569452114, 121.44280253291856]],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "green", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1, "smoothFactor": 1.0, "stroke": true, "weight": 2.5}
+            ).addTo(map_b90d7f5e2da0619176b3c1c7c6aa0bb0);
+        
+</script>
+</html>
