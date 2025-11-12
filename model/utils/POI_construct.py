@@ -125,6 +125,8 @@ class POIRecord:
 
         x, y = _lonlat_to_webmercator(self.longitude, self.latitude)
         # final_context = self.formatted_context()
+        if self.description is None:
+            self.description = f"位于{self.address} 的{self.name},是{self.category}。"
         return {
             "id": poi_id,
             "name": self.name,
@@ -132,7 +134,7 @@ class POIRecord:
             "y": y,
             "lon": self.longitude,
             "lat": self.latitude,
-            "context": self.description or self.source_context,
+            "context": self.description,
         }
 
 
@@ -489,8 +491,9 @@ class POIConstructionPipeline:
                     else "unknown"
                 )
                 embedding_texts.append(
-                    f"{record.name}: Integration of POI data via the Amap API. Address: {record.address or record.location_text or 'unknown'}, Coordinates: ({coord_text}), Category: {record.category or 'unspecified'}, Rating: {record.rating or 'N/A'}. Details: {record.description or unified_context}"
+                    f"{record.name}:  Address: {record.address or record.location_text or 'unknown'}, Coordinates: ({coord_text}), Category: {record.category or 'unspecified'}, Rating: {record.rating or 'N/A'}. Details: {record.description }"
                 )
+                # print(embedding_texts)
             embeddings = self._create_embeddings(embedding_texts)
             print(f"✓ Created {len(embeddings)} embeddings")
 
@@ -694,8 +697,8 @@ def _demo_pipeline_run() -> None:
 
 
     #demo_url = ("https://www.xiaohongshu.com/explore/67dd8119000000001d02f76d?xsec_token=ABSO6S-bEcyA44-o3ESfto_kYILTRAz6QseFGnMcfzWY0=&xsec_source=pc_search&source=unknown")
-    demo_url = ("https://www.xiaohongshu.com/explore/67ee5d1d000000001e00246e?xsec_token=ABmFOVPjsGOWKxvhyFPG-eudTimkU-pLb5QMC9xQhaGhY=&xsec_source=pc_search&source=unknown")
-    city_name = os.getenv("ITINERA_CITY", "shanghai")
+    demo_url = ("https://www.xiaohongshu.com/explore/69007fe2000000000700df5c?xsec_token=ABH_acC2ugSImNX65Hom-m014l2U_WNSqU1Y9f3113aDE=&xsec_source=pc_search&source=unknown")
+    city_name = os.getenv("ITINERA_CITY", "beijing")
     amap_key = os.getenv("AMAP_API_KEY")
 
     if not amap_key:

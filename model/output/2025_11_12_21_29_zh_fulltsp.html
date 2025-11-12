@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    
+        <script>
+            L_NO_TOUCH = false;
+            L_DISABLE_3D = false;
+        </script>
+    
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_646bbf58fe830aa38b2ef41ca0930284 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+        
+</head>
+<body>
+    
+    
+            <div class="folium-map" id="map_646bbf58fe830aa38b2ef41ca0930284" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_646bbf58fe830aa38b2ef41ca0930284 = L.map(
+                "map_646bbf58fe830aa38b2ef41ca0930284",
+                {
+                    center: [39.91885961000514, 116.37163674365787],
+                    crs: L.CRS.EPSG3857,
+                    zoom: 13,
+                    zoomControl: true,
+                    preferCanvas: false,
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_15bf79787be17464b11f92ccaf8d8f68 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {"attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors", "detectRetina": false, "maxNativeZoom": 19, "maxZoom": 19, "minZoom": 0, "noWrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+            );
+        
+    
+            tile_layer_15bf79787be17464b11f92ccaf8d8f68.addTo(map_646bbf58fe830aa38b2ef41ca0930284);
+        
+    
+            var marker_82fa9678b2dcb6a5f043e4d2d8968192 = L.marker(
+                [39.92447100512663, 116.39030544723698],
+                {}
+            ).addTo(map_646bbf58fe830aa38b2ef41ca0930284);
+        
+    
+            var icon_2fb33f7c47d8df4f400d3d6638274493 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "blue", "prefix": "glyphicon"}
+            );
+            marker_82fa9678b2dcb6a5f043e4d2d8968192.setIcon(icon_2fb33f7c47d8df4f400d3d6638274493);
+        
+    
+        var popup_dc463ce5308585a835992287e0dcc504 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_7674c553c3048d9c43e17b7557708c73 = $(`<div id="html_7674c553c3048d9c43e17b7557708c73" style="width: 100.0%; height: 100.0%;">0 - 景山公园</div>`)[0];
+                popup_dc463ce5308585a835992287e0dcc504.setContent(html_7674c553c3048d9c43e17b7557708c73);
+            
+        
+
+        marker_82fa9678b2dcb6a5f043e4d2d8968192.bindPopup(popup_dc463ce5308585a835992287e0dcc504)
+        ;
+
+        
+    
+    
+            var marker_c2d628579c1acd274db1660b7bed5547 = L.marker(
+                [39.92737259501082, 116.38555784931745],
+                {}
+            ).addTo(map_646bbf58fe830aa38b2ef41ca0930284);
+        
+    
+            var icon_4dfdfb127b7f4d7ae5f0d432f7f4457e = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "blue", "prefix": "glyphicon"}
+            );
+            marker_c2d628579c1acd274db1660b7bed5547.setIcon(icon_4dfdfb127b7f4d7ae5f0d432f7f4457e);
+        
+    
+        var popup_782caad343421e922c9322b07a15dca8 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_efd2655f57a23621d1f27c1a40a5ac4e = $(`<div id="html_efd2655f57a23621d1f27c1a40a5ac4e" style="width: 100.0%; height: 100.0%;">1 - 北海公园</div>`)[0];
+                popup_782caad343421e922c9322b07a15dca8.setContent(html_efd2655f57a23621d1f27c1a40a5ac4e);
+            
+        
+
+        marker_c2d628579c1acd274db1660b7bed5547.bindPopup(popup_782caad343421e922c9322b07a15dca8)
+        ;
+
+        
+    
+    
+            var marker_d8dd100f2fb4de834ab2e0b91fe1d0ba = L.marker(
+                [39.93577676262918, 116.39614648440363],
+                {}
+            ).addTo(map_646bbf58fe830aa38b2ef41ca0930284);
+        
+    
+            var icon_c20e27abd2babcc86c9b677f01e185fa = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "blue", "prefix": "glyphicon"}
+            );
+            marker_d8dd100f2fb4de834ab2e0b91fe1d0ba.setIcon(icon_c20e27abd2babcc86c9b677f01e185fa);
+        
+    
+        var popup_83ff02aae7094bee775bdaf5e435ffa0 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_67c21f2b19968cbecd00d675709e02fd = $(`<div id="html_67c21f2b19968cbecd00d675709e02fd" style="width: 100.0%; height: 100.0%;">2 - 南锣鼓巷</div>`)[0];
+                popup_83ff02aae7094bee775bdaf5e435ffa0.setContent(html_67c21f2b19968cbecd00d675709e02fd);
+            
+        
+
+        marker_d8dd100f2fb4de834ab2e0b91fe1d0ba.bindPopup(popup_83ff02aae7094bee775bdaf5e435ffa0)
+        ;
+
+        
+    
+    
+            var marker_225ad64efafe6903b80334ffd0139e8d = L.marker(
+                [39.9358223775052, 116.38007326698909],
+                {}
+            ).addTo(map_646bbf58fe830aa38b2ef41ca0930284);
+        
+    
+            var icon_ad364ba490d134f0f27bbeabedd1a5eb = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "blue", "prefix": "glyphicon"}
+            );
+            marker_225ad64efafe6903b80334ffd0139e8d.setIcon(icon_ad364ba490d134f0f27bbeabedd1a5eb);
+        
+    
+        var popup_7593751df5ab598279b9c278e9343dc0 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_f59a8cca714c373a065e9d0d336bae4b = $(`<div id="html_f59a8cca714c373a065e9d0d336bae4b" style="width: 100.0%; height: 100.0%;">3 - 恭王府</div>`)[0];
+                popup_7593751df5ab598279b9c278e9343dc0.setContent(html_f59a8cca714c373a065e9d0d336bae4b);
+            
+        
+
+        marker_225ad64efafe6903b80334ffd0139e8d.bindPopup(popup_7593751df5ab598279b9c278e9343dc0)
+        ;
+
+        
+    
+    
+            var marker_ad7a1bfcafae8e7f5dc1f5fce04d0b7c = L.marker(
+                [39.99317769204946, 116.39305318929206],
+                {}
+            ).addTo(map_646bbf58fe830aa38b2ef41ca0930284);
+        
+    
+            var icon_48ebccf7f57617189517e048fafdac23 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "blue", "prefix": "glyphicon"}
+            );
+            marker_ad7a1bfcafae8e7f5dc1f5fce04d0b7c.setIcon(icon_48ebccf7f57617189517e048fafdac23);
+        
+    
+        var popup_8e2cd5d1c62485f40c1bee20d9269585 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_2c18b6446940945d6923379822538496 = $(`<div id="html_2c18b6446940945d6923379822538496" style="width: 100.0%; height: 100.0%;">4 - 鸟巢水立方</div>`)[0];
+                popup_8e2cd5d1c62485f40c1bee20d9269585.setContent(html_2c18b6446940945d6923379822538496);
+            
+        
+
+        marker_ad7a1bfcafae8e7f5dc1f5fce04d0b7c.bindPopup(popup_8e2cd5d1c62485f40c1bee20d9269585)
+        ;
+
+        
+    
+    
+            var marker_4f9414955b8a79b0a5715b7d496635e5 = L.marker(
+                [39.94077561694518, 116.33054289469024],
+                {}
+            ).addTo(map_646bbf58fe830aa38b2ef41ca0930284);
+        
+    
+            var icon_6f674615d18fef2a17d237580703b6e3 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "blue", "prefix": "glyphicon"}
+            );
+            marker_4f9414955b8a79b0a5715b7d496635e5.setIcon(icon_6f674615d18fef2a17d237580703b6e3);
+        
+    
+        var popup_9dd9791f979ff0d7b43077ed6cb8052f = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_f831d6916eaf764a99d23e00771ef214 = $(`<div id="html_f831d6916eaf764a99d23e00771ef214" style="width: 100.0%; height: 100.0%;">5 - 北京动物园</div>`)[0];
+                popup_9dd9791f979ff0d7b43077ed6cb8052f.setContent(html_f831d6916eaf764a99d23e00771ef214);
+            
+        
+
+        marker_4f9414955b8a79b0a5715b7d496635e5.bindPopup(popup_9dd9791f979ff0d7b43077ed6cb8052f)
+        ;
+
+        
+    
+    
+            var marker_bb0dbdfd85f1b6fcfbafb8b8c64e9410 = L.marker(
+                [39.935976558658794, 116.330675201049],
+                {}
+            ).addTo(map_646bbf58fe830aa38b2ef41ca0930284);
+        
+    
+            var icon_c1b3a2e5beebc8a843a7cad8e0fd4ab1 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "blue", "prefix": "glyphicon"}
+            );
+            marker_bb0dbdfd85f1b6fcfbafb8b8c64e9410.setIcon(icon_c1b3a2e5beebc8a843a7cad8e0fd4ab1);
+        
+    
+        var popup_c5a92bf473f46aa08595e67fd5c55d67 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_74915c5dc81cacf8ec67d26f719ccf4f = $(`<div id="html_74915c5dc81cacf8ec67d26f719ccf4f" style="width: 100.0%; height: 100.0%;">6 - 北京天文馆</div>`)[0];
+                popup_c5a92bf473f46aa08595e67fd5c55d67.setContent(html_74915c5dc81cacf8ec67d26f719ccf4f);
+            
+        
+
+        marker_bb0dbdfd85f1b6fcfbafb8b8c64e9410.bindPopup(popup_c5a92bf473f46aa08595e67fd5c55d67)
+        ;
+
+        
+    
+    
+            var marker_9e619f1c50d06e8d76c97f4409f91eed = L.marker(
+                [39.84915999471473, 116.21992467852945],
+                {}
+            ).addTo(map_646bbf58fe830aa38b2ef41ca0930284);
+        
+    
+            var icon_e5a971fde5b272534fdfe4212269c558 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "blue", "prefix": "glyphicon"}
+            );
+            marker_9e619f1c50d06e8d76c97f4409f91eed.setIcon(icon_e5a971fde5b272534fdfe4212269c558);
+        
+    
+        var popup_52b72dcf7016eb43afa9c4887ee1f2f5 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_42e5fad4d9ee8f4f9bac5c917e0cf180 = $(`<div id="html_42e5fad4d9ee8f4f9bac5c917e0cf180" style="width: 100.0%; height: 100.0%;">7 - 卢沟桥</div>`)[0];
+                popup_52b72dcf7016eb43afa9c4887ee1f2f5.setContent(html_42e5fad4d9ee8f4f9bac5c917e0cf180);
+            
+        
+
+        marker_9e619f1c50d06e8d76c97f4409f91eed.bindPopup(popup_52b72dcf7016eb43afa9c4887ee1f2f5)
+        ;
+
+        
+    
+    
+            var marker_6f548c6eefe327922fbb6191078b252c = L.marker(
+                [39.894748540249935, 116.39765288727928],
+                {}
+            ).addTo(map_646bbf58fe830aa38b2ef41ca0930284);
+        
+    
+            var icon_e995558475488d23ade4de4d39dcd27e = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "blue", "prefix": "glyphicon"}
+            );
+            marker_6f548c6eefe327922fbb6191078b252c.setIcon(icon_e995558475488d23ade4de4d39dcd27e);
+        
+    
+        var popup_46801f8c5adf246664ca0762a192c19b = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_b0b45e4967a24106ce357335da4ffd56 = $(`<div id="html_b0b45e4967a24106ce357335da4ffd56" style="width: 100.0%; height: 100.0%;">8 - 前门大街</div>`)[0];
+                popup_46801f8c5adf246664ca0762a192c19b.setContent(html_b0b45e4967a24106ce357335da4ffd56);
+            
+        
+
+        marker_6f548c6eefe327922fbb6191078b252c.bindPopup(popup_46801f8c5adf246664ca0762a192c19b)
+        ;
+
+        
+    
+    
+            var marker_5a4fc532e0c159dc72c05ad1a9facbd3 = L.marker(
+                [39.89750471145562, 116.4002191161973],
+                {}
+            ).addTo(map_646bbf58fe830aa38b2ef41ca0930284);
+        
+    
+            var icon_71e7bd4168a53a4ac1b1deaf641875df = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "blue", "prefix": "glyphicon"}
+            );
+            marker_5a4fc532e0c159dc72c05ad1a9facbd3.setIcon(icon_71e7bd4168a53a4ac1b1deaf641875df);
+        
+    
+        var popup_3350ea4eb9b35e80a0a60d938ce7558d = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_9b93a343c108de30c089ae18bce77895 = $(`<div id="html_9b93a343c108de30c089ae18bce77895" style="width: 100.0%; height: 100.0%;">9 - 北京宦官文化陈列馆</div>`)[0];
+                popup_3350ea4eb9b35e80a0a60d938ce7558d.setContent(html_9b93a343c108de30c089ae18bce77895);
+            
+        
+
+        marker_5a4fc532e0c159dc72c05ad1a9facbd3.bindPopup(popup_3350ea4eb9b35e80a0a60d938ce7558d)
+        ;
+
+        
+    
+    
+            var marker_4ced996e23855be7a326f0afe99bb27b = L.marker(
+                [39.90105985624561, 116.4016991656246],
+                {}
+            ).addTo(map_646bbf58fe830aa38b2ef41ca0930284);
+        
+    
+            var icon_6ff9b2144a5639b4b4f3094db6d5f002 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "blue", "prefix": "glyphicon"}
+            );
+            marker_4ced996e23855be7a326f0afe99bb27b.setIcon(icon_6ff9b2144a5639b4b4f3094db6d5f002);
+        
+    
+        var popup_17ce7ae4955ae6af44c2a80f6d05722b = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_15670633f5b9fee30b8b83fbc41398a6 = $(`<div id="html_15670633f5b9fee30b8b83fbc41398a6" style="width: 100.0%; height: 100.0%;">10 - 东郊民巷</div>`)[0];
+                popup_17ce7ae4955ae6af44c2a80f6d05722b.setContent(html_15670633f5b9fee30b8b83fbc41398a6);
+            
+        
+
+        marker_4ced996e23855be7a326f0afe99bb27b.bindPopup(popup_17ce7ae4955ae6af44c2a80f6d05722b)
+        ;
+
+        
+    
+    
+            var marker_0f8f38aa72595b60f2ac7945f536a17a = L.marker(
+                [39.90397012270089, 116.39506049773402],
+                {}
+            ).addTo(map_646bbf58fe830aa38b2ef41ca0930284);
+        
+    
+            var icon_daa34c641978a9bcd89ad90854f502d0 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "blue", "prefix": "glyphicon"}
+            );
+            marker_0f8f38aa72595b60f2ac7945f536a17a.setIcon(icon_daa34c641978a9bcd89ad90854f502d0);
+        
+    
+        var popup_537b8c317ae49c2c181d40b0e392cfbf = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_2c37fba568d8f08cdd1e53f1fcde6e4a = $(`<div id="html_2c37fba568d8f08cdd1e53f1fcde6e4a" style="width: 100.0%; height: 100.0%;">11 - 国家博物馆</div>`)[0];
+                popup_537b8c317ae49c2c181d40b0e392cfbf.setContent(html_2c37fba568d8f08cdd1e53f1fcde6e4a);
+            
+        
+
+        marker_0f8f38aa72595b60f2ac7945f536a17a.bindPopup(popup_537b8c317ae49c2c181d40b0e392cfbf)
+        ;
+
+        
+    
+    
+            var marker_4281ff05a40ea119472e629df9fbf155 = L.marker(
+                [39.90778348771236, 116.39121937255355],
+                {}
+            ).addTo(map_646bbf58fe830aa38b2ef41ca0930284);
+        
+    
+            var icon_3999bc3d5030218d255b548ddf7b6e5f = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "blue", "prefix": "glyphicon"}
+            );
+            marker_4281ff05a40ea119472e629df9fbf155.setIcon(icon_3999bc3d5030218d255b548ddf7b6e5f);
+        
+    
+        var popup_40c6fa85de1904d83b49730277a81d72 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_da61b387075d03ae6fbe141b842560f8 = $(`<div id="html_da61b387075d03ae6fbe141b842560f8" style="width: 100.0%; height: 100.0%;">12 - 天安门</div>`)[0];
+                popup_40c6fa85de1904d83b49730277a81d72.setContent(html_da61b387075d03ae6fbe141b842560f8);
+            
+        
+
+        marker_4281ff05a40ea119472e629df9fbf155.bindPopup(popup_40c6fa85de1904d83b49730277a81d72)
+        ;
+
+        
+    
+    
+            var marker_3a343cac22fbe32a8a61eb212ce06a8d = L.marker(
+                [39.91643521906771, 116.39078436031353],
+                {}
+            ).addTo(map_646bbf58fe830aa38b2ef41ca0930284);
+        
+    
+            var icon_a94d977f1a46550f7ae7c98bd7f6dce2 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "blue", "prefix": "glyphicon"}
+            );
+            marker_3a343cac22fbe32a8a61eb212ce06a8d.setIcon(icon_a94d977f1a46550f7ae7c98bd7f6dce2);
+        
+    
+        var popup_c8ab5503463015e42407ea62c4c27e64 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_85daae0dd234b15f91733e2777123d68 = $(`<div id="html_85daae0dd234b15f91733e2777123d68" style="width: 100.0%; height: 100.0%;">13 - 故宫</div>`)[0];
+                popup_c8ab5503463015e42407ea62c4c27e64.setContent(html_85daae0dd234b15f91733e2777123d68);
+            
+        
+
+        marker_3a343cac22fbe32a8a61eb212ce06a8d.bindPopup(popup_c8ab5503463015e42407ea62c4c27e64)
+        ;
+
+        
+    
+    
+            var poly_line_507cdd3cfd75876891a51456d269db7e = L.polyline(
+                [[39.92447100512663, 116.39030544723698], [39.92737259501082, 116.38555784931745], [39.93577676262918, 116.39614648440363], [39.9358223775052, 116.38007326698909], [39.99317769204946, 116.39305318929206], [39.94077561694518, 116.33054289469024], [39.935976558658794, 116.330675201049], [39.84915999471473, 116.21992467852945], [39.894748540249935, 116.39765288727928], [39.89750471145562, 116.4002191161973], [39.90105985624561, 116.4016991656246], [39.90397012270089, 116.39506049773402], [39.90778348771236, 116.39121937255355], [39.91643521906771, 116.39078436031353]],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "green", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1, "smoothFactor": 1.0, "stroke": true, "weight": 2.5}
+            ).addTo(map_646bbf58fe830aa38b2ef41ca0930284);
+        
+</script>
+</html>
