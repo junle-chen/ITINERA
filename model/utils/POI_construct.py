@@ -160,8 +160,7 @@ class MediaContentAggregator:
 
         for idx, url in enumerate(image_urls):
             try:
-                if idx > 2:
-                    break
+        
                 resp = self.session.get(url, timeout=30)
                 resp.raise_for_status()
                 img = Image.open(BytesIO(resp.content))
@@ -419,6 +418,17 @@ class POIConstructionPipeline:
             else f"✓ Title: {scraped.title}"
         )
         print(f"✓ Found {len(scraped.images)} images, {len(scraped.videos)} videos")
+        
+        # Print detailed ScrapedPost information
+        print("\n📋 Scraped Post Details:")
+        print(f"  • URL: {scraped.url}")
+        print(f"  • Title: {scraped.title}")
+        print(f"  • Content: {scraped.content[:200]}..." if len(scraped.content) > 200 else f"  • Content: {scraped.content}")
+        print(f"  • Tags: {scraped.tags}")
+        print(f"  • Author City: {scraped.author_city}")
+        print(f"  • Location (meta): {scraped.meta.get('location')}")
+        print(f"  • Number of Images: {len(scraped.images)}")
+        print(f"  • Number of Videos: {len(scraped.videos)}")
 
         print("\n[Step 2/6] 🖼️  Extracting text from images (OCR)...")
         ocr_texts = self.media.extract_image_text(scraped.images)
@@ -438,6 +448,20 @@ class POIConstructionPipeline:
         print("\n[Step 5/6] 🗺️  Resolving locations via Amap API...")
         resolved_pois = self._resolve_locations(poi_candidates, scraped)
         print(f"✓ Successfully resolved {len(resolved_pois)} POIs with coordinates")
+        
+        # Print detailed POI information from Amap
+        if resolved_pois:
+            print("\n📍 Resolved POI Details from Amap:")
+            for idx, poi in enumerate(resolved_pois, 1):
+                print(f"\n  POI #{idx}:")
+                print(f"    • Name: {poi.name}")
+                print(f"    • Address: {poi.address}")
+                print(f"    • City: {poi.city}")
+                print(f"    • Category: {poi.category}")
+                print(f"    • Rating: {poi.rating}")
+                print(f"    • Coordinates: ({poi.longitude:.6f}, {poi.latitude:.6f})" if poi.longitude and poi.latitude else "    • Coordinates: N/A")
+                print(f"    • Amap ID: {poi.amap_id}")
+                print(f"    • Location Text: {poi.location_text}")
 
         print("\n[Step 6/6] ✍️  Generating descriptions using LLM...")
         enriched_pois = self._generate_descriptions(resolved_pois, unified_context)
@@ -668,11 +692,8 @@ __all__ = [
 def _demo_pipeline_run() -> None:
     """Runs the full pipeline on a sample XiaoHongShu post for manual testing."""
 
-    demo_url = (
-        "https://www.xiaohongshu.com/explore/6826b55a000000002300d355?"
-        "xsec_token=ABm7BYr7pBQblNgOUehE4PQGU_yJwpf_s4BCUWzltAp_Y=&"
-        "xsec_source=pc_search&source=unknown"
-    )
+
+    demo_url = ("https://www.xiaohongshu.com/explore/67dd8119000000001d02f76d?xsec_token=ABSO6S-bEcyA44-o3ESfto_kYILTRAz6QseFGnMcfzWY0=&xsec_source=pc_search&source=unknown")
     city_name = os.getenv("ITINERA_CITY", "shanghai")
     amap_key = os.getenv("AMAP_API_KEY")
 

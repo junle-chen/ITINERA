@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 from functools import partial
 import json
 from pprint import pprint
+from concurrent.futures import ThreadPoolExecutor
 from .utils import text_contains, class_starts_with, class_contains
 
 # https://michael-shub.github.io/curl2scrapy/
@@ -13,9 +14,9 @@ headers = {
     "accept-language": "en,zh-CN;q=0.9,zh;q=0.8",
     "origin": "https://www.xiaohongshu.com",
     "referer": "https://www.xiaohongshu.com/",
-    "sec-ch-ua": "\"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"114\", \"Google Chrome\";v=\"114\"",
+    "sec-ch-ua": '"Not.A/Brand";v="8", "Chromium";v="114", "Google Chrome";v="114"',
     "sec-ch-ua-mobile": "?0",
-    "sec-ch-ua-platform": "\"macOS\"",
+    "sec-ch-ua-platform": '"macOS"',
     "sec-fetch-dest": "empty",
     "sec-fetch-mode": "cors",
     "sec-fetch-site": "same-site",
@@ -58,9 +59,9 @@ headers_ios = {
     "accept-language": "en,zh-CN;q=0.9,zh;q=0.8",
     "origin": "https://www.xiaohongshu.com",
     "referer": "https://www.xiaohongshu.com/",
-    "sec-ch-ua": "\"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"114\", \"Google Chrome\";v=\"114\"",
+    "sec-ch-ua": '"Not.A/Brand";v="8", "Chromium";v="114", "Google Chrome";v="114"',
     "sec-ch-ua-mobile": "?0",
-    "sec-ch-ua-platform": "\"macOS\"",
+    "sec-ch-ua-platform": '"macOS"',
     "sec-fetch-dest": "empty",
     "sec-fetch-mode": "cors",
     "sec-fetch-site": "same-site",
@@ -110,54 +111,113 @@ cookies = {
 }
 
 
-
-
-
 class XHSScraper:
     def __init__(self):
         pass
 
     def extract_post_content(self, url):
-        resp = requests.get(url, headers=headers, cookies=cookies)
+        # ⚡ 优化：并行发送两个HTTP请求
+        import time
+        start_time = time.time()
+        
+        with ThreadPoolExecutor(max_workers=2) as executor:
+            future1 = executor.submit(requests.get, url, headers=headers, cookies=cookies)
+            future2 = executor.submit(requests.get, url, headers=headers_ios, cookies=cookies)
+            
+            resp = future1.result()
+            resp2 = future2.result()
+        
+        print(f"⏱️  Both HTTP requests completed in {time.time() - start_time:.2f}s")
+        
         if resp.status_code != 200:
-            raise ValueError(f"HTTP response failed with status code {resp.status_code}")
+            raise ValueError(
+                f"HTTP response failed with status code {resp.status_code}"
+            )
+        if resp2.status_code != 200:
+            raise ValueError(
+                f"HTTP response IOS failed with status code {resp2.status_code}"
+            )
 
-        soup = BeautifulSoup(resp.content, 'lxml')
-        title = soup.find('meta', attrs={'name': 'og:title'})['content']
-        
-        meta_content = soup.find('meta', attrs={'name': 'description'}).get('content')
+        soup = BeautifulSoup(resp.content, "lxml")
+        title = soup.find("meta", attrs={"name": "og:title"})["content"]
 
-        ori_url = soup.find('meta', attrs={'name': 'og:url'})['content']
+        meta_content = soup.find("meta", attrs={"name": "description"}).get("content")
 
+        ori_url = soup.find("meta", attrs={"name": "og:url"})["content"]
 
-        
-        scripts = soup.find(partial(text_contains, substr="imageList", tag_name="script")).text
+        scripts = soup.find(
+            partial(text_contains, substr="imageList", tag_name="script")
+        ).text
 
         imgs = re.findall(r'"imageList":\[(.*)\]', scripts)
-        imgs = imgs[0] if imgs else ''
+        imgs = imgs[0] if imgs else ""
         len_imgs = len(imgs)
         imgs = imgs.encode("UTF-8").decode("unicode_escape")
-        imgs = re.findall(r'"(https://.*?)"', imgs) + re.findall(r'"(http://.*?)"', imgs)
-        image_urls, video_urls = [], []
-        for raw_url in imgs:
-            if 'avatar' in raw_url:
+        imgs = re.findall(r'"(https://.*?)"', imgs) + re.findall(
+            r'"(http://.*?)"', imgs
+        )
+
+        final_urls_map = {}  # 使用字典来确保唯一性
+
+        for url in imgs:
+            if "avatar" in url:
                 continue
-            base_url = raw_url.split('?')[0]
-            if base_url.lower().endswith(('.mp4', '.mov', '.m4v')):
+
+            # 提取文件ID - 处理图片URL（包含!符号的）
+            file_id_match = re.search(r"/([^/]+)!", url)
+
+            if file_id_match:
+                # 图片URL - 提取!之前的ID部分
+                file_id = file_id_match.group(1)
+
+                # 优先保留 'nd_dft_' (default) 版本，其次是 'nd_prv_' (preview)
+                if file_id not in final_urls_map or "nd_dft_" in url:
+                    final_urls_map[file_id] = url
+            else:
+                # 视频URL或其他 - 提取最后一段路径作为ID
+                # 例如: 01e8fb8adc7fb1984f0370019a16978f72_258.mp4
+                video_id_match = re.search(r"/([^/]+\.(mp4|mov|m4v))$", url)
+                if video_id_match:
+                    video_id = video_id_match.group(1)
+                    # 视频URL去重 - 只保留第一个遇到的
+                    if video_id not in final_urls_map:
+                        final_urls_map[video_id] = url
+                else:
+                    # 其他情况，使用完整URL作为key
+                    if url not in final_urls_map:
+                        final_urls_map[url] = url
+
+        # 5. 循环处理最终的、干净的 URL 列表
+        image_urls, video_urls = [], []
+        for raw_url in final_urls_map.values():
+            if "avatar" in raw_url:
+                continue
+            
+            base_url = raw_url.split("?")[0]
+
+            if base_url.lower().endswith((".mp4", ".mov", ".m4v")):
                 video_urls.append(base_url)
             else:
-                image_urls.append(raw_url + '?imageView2/format/jpg|imageMogr2/strip')
+                image_urls.append(raw_url + "?imageView2/format/jpg|imageMogr2/strip")
+        
+        if len(image_urls) == 1 and len(video_urls) != 0:
+            # 处理只有一个图片但有视频的情况，可能是视频封面图
+            image_urls = []
+        elif image_urls:
+            # 避免live变成视频
+            video_urls = []
+        
 
         tags_str = soup.find_all(partial(class_contains, substr="tag"))
         if tags_str:
             tags = [t.text for t in tags_str]
         else:
             tags = None
-        
+
         regs = [
             r'"user":(\{"avatar":(.*?)\})',
             r'"user":(\{"nickname":(.*?)\})',
-            r'"user":(\{"userId":(.*?)\})'
+            r'"user":(\{"userId":(.*?)\})',
         ]
         user = [item for reg in regs for item in re.findall(reg, scripts)]
         if user:
@@ -169,49 +229,81 @@ class XHSScraper:
             nickname = None
             avatar = None
             userId = None
-        
+
         interact = re.findall(r'interactInfo":(\{(.*?)\})', scripts)
-        
+
         if interact:
             interact = json.loads(interact[0][0])
-            collectedCount = interact['collectedCount']
-            commentCount = interact['commentCount']
-            shareCount = interact['shareCount']
-            likedCount = interact['likedCount']
+            collectedCount = interact["collectedCount"]
+            commentCount = interact["commentCount"]
+            shareCount = interact["shareCount"]
+            likedCount = interact["likedCount"]
         else:
             collectedCount = None
             commentCount = None
             shareCount = None
             likedCount = None
-        
 
-        date_str = soup.find(attrs={'class': 'date'}).text.split()
+        date_str = soup.find(attrs={"class": "date"}).text.split()
         date = date_str[0]
         if len(date_str) > 1:
             city = date_str[1]
         else:
             city = None
-        
-        resp2 = requests.get(url, headers=headers_ios, cookies=cookies)
-        if resp2.status_code != 200:
-            raise ValueError(f"HTTP response IOS failed with status code {resp2.status_code}")
-        soup2 = BeautifulSoup(resp2.content, 'lxml')
-        
-        keywords_tags = soup2.find('meta', attrs={'name': 'keywords'})
+
+        # ⚡ 第二个响应已经在开始时并行获取了
+        # resp2 = requests.get(url, headers=headers_ios, cookies=cookies)  # 删除这行
+        # if resp2.status_code != 200:
+        #     raise ValueError(
+        #         f"HTTP response IOS failed with status code {resp2.status_code}"
+        #     )
+        soup2 = BeautifulSoup(resp2.content, "lxml")
+
+        keywords_tags = soup2.find("meta", attrs={"name": "keywords"})
         if keywords_tags:
-            keywords = keywords_tags['content'].split(",")
+            keywords = keywords_tags["content"].split(",")
         else:
             keywords = None
-        
+
         pois_str = soup2.find_all(partial(class_contains, substr="note-poi"))
         if pois_str:
             poi = pois_str[0].text.strip()
         else:
             poi = None
-        
-        scripts2 = soup2.find(partial(text_contains, substr="commentData", tag_name="script")).text
 
-        raw_comments = re.findall(r'commentData":(\{(.*?)\}),"userOtherNotesData"', scripts2)
+        scripts2 = soup2.find(
+            partial(text_contains, substr="commentData", tag_name="script")
+        )
+        if not scripts2:
+            comments = None
+            return {
+                "source_platform": "xhs",
+                "url": ori_url,
+                "title": title,
+                "content": meta_content,
+                "img_urls": image_urls,
+                "video_urls": video_urls,
+                "author": {
+                    "nickname": nickname,
+                    "avatar": avatar,
+                    "userId": userId,
+                    "city": city,
+                },
+                "liked_count": likedCount,
+                "collected_count": collectedCount,
+                "comment_count": commentCount,
+                "share_count": shareCount,
+                "comments": comments,
+                "time": date,
+                "tags": tags,
+                "keywords": keywords,
+                "location": poi,
+            }
+        scripts2 = scripts2.text
+
+        raw_comments = re.findall(
+            r'commentData":(\{(.*?)\}),"userOtherNotesData"', scripts2
+        )
         if raw_comments:
             raw_comments = json.loads(raw_comments[0][0])
             # TODO: subcomments?
@@ -219,7 +311,7 @@ class XHSScraper:
                 {
                     "content": com["content"],
                     "user": com["user"]["nickname"],
-                    "is_from_author": com["user"]["userId"] == userId
+                    "is_from_author": com["user"]["userId"] == userId,
                 }
                 for com in raw_comments["comments"]
             ]
@@ -237,21 +329,31 @@ class XHSScraper:
                 "nickname": nickname,
                 "avatar": avatar,
                 "userId": userId,
-                "city": city
+                "city": city,
             },
-            'liked_count': likedCount,
-            'collected_count': collectedCount,
-            'comment_count': commentCount,
-            'share_count': shareCount,
-            "comments" : comments,
+            "liked_count": likedCount,
+            "collected_count": collectedCount,
+            "comment_count": commentCount,
+            "share_count": shareCount,
+            "comments": comments,
             "time": date,
             "tags": tags,
             "keywords": keywords,
-            "location": poi
+            "location": poi,
         }
 
 
-if __name__ == '__main__':
-    url = "https://www.xiaohongshu.com/explore/6826b55a000000002300d355?xsec_token=ABm7BYr7pBQblNgOUehE4PQGU_yJwpf_s4BCUWzltAp_Y=&xsec_source=pc_search&source=unknown"
+if __name__ == "__main__":
+    url = "https://www.xiaohongshu.com/explore/67dd8119000000001d02f76d?xsec_token=ABSO6S-bEcyA44-o3ESfto_kYILTRAz6QseFGnMcfzWY0=&xsec_source=pc_search&source=unknown"
+    url = "https://www.xiaohongshu.com/explore/67dd8119000000001d02f76d?xsec_token=ABSO6S-bEcyA44-o3ESfto_kYILTRAz6QseFGnMcfzWY0=&xsec_source=pc_search&source=unknown"
+    url = "https://www.xiaohongshu.com/explore/6914432e00000000040163cc?xsec_token=ABWYFw-e7-KP8vnNLbrHBZmPZq1bEPcLLnKRuhXDUzuYY=&xsec_source=pc_feed"
+    url = "https://www.xiaohongshu.com/explore/690c58e1000000000703a6da?xsec_token=ABZh8YQ0ggh77QBoEDpVJlFAi8wmc7CPXvVVu1UkL-GKc=&xsec_source=pc_feed"
+    url = "https://www.xiaohongshu.com/explore/6910a9fd000000000700e3bb?xsec_token=ABJub241xr7cjhi3TRYCMSydqFzxOEVpJDbGEvN3QMpIc=&xsec_source=pc_feed"
+    url = "https://www.xiaohongshu.com/explore/6826b55a000000002300d355?xsec_token=ABm7BYr7pBQblNgOUehE4PQCIDdAJ6BvXTGNuXGp_JSp8=&xsec_source=pc_search&source=unknown"
+    url = "https://www.xiaohongshu.com/explore/6904c3bd000000000503936f?xsec_token=ABMN_wQTMr6kO20vh2HJjHEwbH2dqFaxqOIPapz3qrRGM=&xsec_source=pc_feed"
+    url = "https://www.xiaohongshu.com/explore/690ed9b3000000000700cac8?xsec_token=ABrq2WtzwWEhPFsLKB10W35_l_KapvqBPLKjNeuras2nA=&xsec_source=pc_search&source=unknown"
     # url = "https://www.xiaohongshu.com/explore/64fac943000000001f03bb4f"
-    pprint(XHSScraper().extract_post_content(url))
+    resp = XHSScraper().extract_post_content(url)
+
+    pprint(resp)
+    print(len(resp["img_urls"]))
