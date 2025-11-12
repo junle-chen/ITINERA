@@ -124,7 +124,7 @@ class POIRecord:
             )
 
         x, y = _lonlat_to_webmercator(self.longitude, self.latitude)
-        final_context = self.formatted_context()
+        # final_context = self.formatted_context()
         return {
             "id": poi_id,
             "name": self.name,
@@ -132,7 +132,7 @@ class POIRecord:
             "y": y,
             "lon": self.longitude,
             "lat": self.latitude,
-            "context": final_context,
+            "context": self.description or self.source_context,
         }
 
 
@@ -693,7 +693,8 @@ def _demo_pipeline_run() -> None:
     """Runs the full pipeline on a sample XiaoHongShu post for manual testing."""
 
 
-    demo_url = ("https://www.xiaohongshu.com/explore/67dd8119000000001d02f76d?xsec_token=ABSO6S-bEcyA44-o3ESfto_kYILTRAz6QseFGnMcfzWY0=&xsec_source=pc_search&source=unknown")
+    #demo_url = ("https://www.xiaohongshu.com/explore/67dd8119000000001d02f76d?xsec_token=ABSO6S-bEcyA44-o3ESfto_kYILTRAz6QseFGnMcfzWY0=&xsec_source=pc_search&source=unknown")
+    demo_url = ("https://www.xiaohongshu.com/explore/67ee5d1d000000001e00246e?xsec_token=ABmFOVPjsGOWKxvhyFPG-eudTimkU-pLb5QMC9xQhaGhY=&xsec_source=pc_search&source=unknown")
     city_name = os.getenv("ITINERA_CITY", "shanghai")
     amap_key = os.getenv("AMAP_API_KEY")
 
